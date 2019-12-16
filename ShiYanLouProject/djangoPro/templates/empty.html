@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{#    <ul>#}
+{#        {% for user in user_list %}#}
+{#            <li>{{ user.nickname }}</li>#}
+{#        {% endfor %}#}
+{#    </ul>#}
+
+{#<p>查询用户的规划</p>#}
+{#<tatle>#}
+{#    <tr>#}
+{#        <th>姓名：</th>#}
+{#        <td>{{ user.nickname }}</td>#}
+{#        <th>职业：</th>#}
+{#        <td>{{ user.plan.name }}</td>#}
+{#    </tr>#}
+{#</tatle>#}
+
+
+    <p>查询用户的规划:</p>
+    <ul>
+{#    查询所有c++规划的用户名#}
+{#        {% for user in plan %}#}
+{#            {% for i in user.user_set.all %}#}
+{#                <li>{{ i.nickname }}</li>#}
+{#            {% endfor %}#}
+{#        {% endfor %}#}
+{#        查询所有c++规划的用户名#}
+{#        {% for i in lst %}#}
+{#            <li>{{ i }}</li>#}
+{#        {% endfor %}#}
+{#查询id=29相关联的所有用户#}
+{#        {% for user in plan.user_set.all %}#}
+{#            {{ user.nickname}}#}
+{#        {% endfor %}#}
+    {% for lesson in plan %}
+        <li>{{ lesson.lable }}</li>
+    {% endfor %}
+
+    </ul>
+</body>
+</html>
