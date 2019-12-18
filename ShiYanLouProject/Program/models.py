@@ -11,6 +11,8 @@ class User(models.Model):
     email = models.EmailField()
     password = models.CharField(max_length=32)
     plan = models.ForeignKey(to=Plan,on_delete=models.CASCADE)
+
+
 class Lesson(models.Model):
     lable = models.CharField(max_length=32)
     picture = models.ImageField(upload_to="img")
@@ -18,7 +20,11 @@ class Lesson(models.Model):
     plan = models.ManyToManyField(to=Plan,)
 # Create your models here.
 
-
+class LoginUser(models.Model):
+    nickname = models.CharField(max_length=32)
+    email = models.EmailField()
+    password = models.CharField(max_length=32)
+    picture = models.ImageField(upload_to='img')
 
 
 

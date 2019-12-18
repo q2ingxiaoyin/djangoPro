@@ -1,8 +1,11 @@
 import random
+import hashlib
+import time
 from pypinyin import lazy_pinyin
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse,redirect
 from django.shortcuts import render_to_response
 from Program.models import *
+from django.http import JsonResponse
 # Create your views here.
 
 def index(request):
@@ -25,7 +28,6 @@ def andplan(request):
         plan.image = "img/%s.png"%(random.randint(100,999))
         plan.save()
     return HttpResponse('注册完成了')
-
 
 def addUser(request):
     for i in range(1000):
@@ -53,7 +55,7 @@ def addLesson(request):
         lession.picture = "img/%s.png"%(random.randint(100,999))
         lession.show_number = random.randint(0, 99999)
         lession.save()
-        for i in range(random.randint(2,7)):
+        for i in range(random.randint(2,7)):#6
             lession.plan.add(
                 random.choice(Plan.objects.filter(id__lt=100))
             )
@@ -63,7 +65,6 @@ def addLesson(request):
 def deleta(request):
     Lesson.objects.all().delete()
     return HttpResponse('删除成功')
-
 
 def select(request):
     #查询所有用户
@@ -82,6 +83,95 @@ def select(request):
     #查询id=40的规划所包含的课程
     plan = Plan.objects.get(id=40).lesson_set.all()
     return render_to_response("empty.html",locals())
+def set_password(password):
+    #实例化一个md5
+    md5 = hashlib.md5()
+    #对指定对象精心加密，当前对象必须是字节
+    md5.update(password.encode())
+    #获取加密结果
+    result = md5.hexdigest()
+    return result
+
+def register(request):
+    if request.method == "POST":
+        #获取页面post请求的数据
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        #图片需要通过request.FILES来接收
+        picture = request.FILES.get('picture')
+        #保存数据到数据库
+        user = LoginUser()
+        user.nickname = username
+        user.email = email
+        #保存加密后的密码
+        user.password = set_password(password)
+        user.picture = picture
+        user.save()
+        return redirect('/index/')
+    #返回注册页面
+    return render(request,'register.html')
+
+
+def userValid(request):
+    result = {"data": "","code": 200}
+    username = request.GET.get("name")
+    if username:
+        user = LoginUser.objects.filter(nickname=username).first()
+        if user:
+            result["data"] = "用户名重复"
+        else:
+            result["data"] = "用户名可以使用"
+    return JsonResponse(result)
+
+def send_data(request):
+    now = time.strftime("%H:%M:%S",time.localtime())
+    number = random.randint(800,1300)
+    result = {"now": now,"number": number}
+    return JsonResponse(result)
+
+
+def register_ajax(request):
+    if request.method == "POST":
+        #获取页面post请求的数据
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        #图片需要通过request.FILES来接收
+        picture = request.FILES.get('picture')
+        #保存数据到数据库
+        user = LoginUser()
+        user.nickname = username
+        user.email = email
+        #保存加密后的密码
+        user.password = set_password(password)
+        user.picture = picture
+        user.save()
+    #返回注册页面
+    return JsonResponse({"data": "保存成功"})
+
+from Program.forms import UserForm
+
+def formExm(request):
+    userform = UserForm()
+    return render(request,'formExm.html',locals())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

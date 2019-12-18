@@ -23,7 +23,12 @@ urlpatterns = [
     path('adduser/',views.addUser),
     path('addlesson/',views.addLesson),
     path('delete/',views.deleta),
+    path('register/',views.register)
 ]
 urlpatterns +=[
-    path('select/',views.select)
+    path('select/',views.select),
+    path('userValid/',views.userValid),
+    path('sd/',views.send_data),
+    path('register_ajax/',views.register_ajax),
+    path('formExm/',views.formExm)
 ]

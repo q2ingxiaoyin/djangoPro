@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block style %}
+    <style>
+        .from_div{
+            margin-top: 100px;
+            padding-top:100px;
+            padding-left: 300px;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <div style="height:500px" >
+        <div class="from_div">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p>
+                <input type="text" id="username" name="username" placeholder="用户名">
+            </p>
+                <p>
+                    <input type="email" id="email" name="email" placeholder="邮箱">
+                </p>
+                <p>
+                    <input type="password" id="password" name="password" placeholder="密码" >
+                </p>
+                    <input type="file" id="picture" name="picture">
+                <p>
+{#                    <input type="submit" value="注册" style="background-color: #1ebc1a">#}
+                        <input type="button" id="submit1" value="注册" style="background-color: #1ebc1a">
+                </p>
+            </form>
+            <div>
+            <p>校验用户名：</p>
+                <p>
+                <input type="text" id="usernames">
+                    {{ result.data }}
+                <span id="error_message"></span>
+            </p>
+            </div>
+        </div>
+    </div>
+    <div id="main" style="width: 600px;height:400px;"></div>
+{% endblock %}
+{% block script %}
+    <script src="/static/static/jquery/2.2.4/jquery.min.js"></script>
+    <script src="/static/static/jquery/2.2.4/echarts.min.js"></script>
+    <script>
+        $("#submit1").click(
+            function () {
+                var username = $("#username").val();
+                var email = $("#email").val();
+                var password = $("#password").val();
+                var picture = $("#picture")[0].files[0];//获取图片对象
+
+                console.log(username);
+                console.log(email);
+                console.log(password);
+                console.log(picture[0].files[0]);
+                console.log('{{ csrf_token }}');
+                var formData = new FormData();
+                formData.append("username",username);
+                formData.append("email",email);
+                formData.append("password",password);
+                formData.append("picture",picture);
+                formData.append("csrfmiddlewaretoken",'{{ csrf_token }}');
+                $.ajax(
+                    {
+                        url: "/register_ajax/",
+                        type: "post",
+                        data: formData,
+                        //提交图片需要配置以下三条
+                        processData:false,//是否严格检查数据类型
+                        contentType:false,//是否严格检查内容类型
+                        dataType: 'json',//请求数据的格式是json，在部分浏览器需要填写
+                        success:function (data) {
+                                console.log(data["data"])
+                        },
+                        error: function (error) {
+                            console.log(error)
+                        }
+                    }
+                )
+            }
+        )
+    </script>
+    <script>
+        $(
+            function () {
+                $('#usernames').blur(
+                    function () {
+                        var username = $('#usernames').val();
+                        var url = "/userValid/?name="+username;
+                        $.ajax(
+                            {
+                                url:url,//请求的地址
+                                type: "get",//请求的方式
+                                data: "",//请求的参数
+                                success: function (data) {
+                                    $("#error_message").text(data["data"]);
+                                    console.log(data["data"])
+                                },//请求成功执行的函数,date参数用来接收后台响应的数据
+                                error: function (error) {
+                                    console.log(error)
+                                }//请求失败执行的函数，error参数用来接收后台响应的数据
+                            }
+                        )
+                    }
+                )
+            }
+        )//页面加载完成执行
+    </script>
+
+    <script>
+        var myChart = echarts.init(document.getElementById('main'));//获取画布
+        option = {
+            xAxis: {
+                type: 'category',
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [820, 932, 901, 934, 1290, 1330, 1320],
+                type: 'line'
+            }]
+        };//回执参数
+        myChart.setOption(option);//画布和参数绑定
+        setInterval(//定时器
+            function () {
+                $.ajax(
+                    {
+                        url: "/sd/",
+                        type: "get",
+                        data: "",
+                        success:function (data) {
+                            option["xAxis"]["data"].push(data["now"]);
+                            option["series"][0]["data"].push(data["number"]);
+                            option["xAxis"]["data"].shift();
+                            option["series"][0]["data"].shift();
+                            myChart.setOption(option);//画布和参数绑定
+                        },
+                        error: function (error) {
+
+                        }
+                    }
+                )},2000
+        )
+
+    </script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
